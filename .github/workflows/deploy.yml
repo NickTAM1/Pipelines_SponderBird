@@ -69,7 +69,7 @@ jobs:
 
       environment:
         name: github-pages
-        url: ${{ steps.deploy-to-gh-pages.outputs.page_url }}
+        url: ${{ steps.deploy.outputs.page_url }}
 
       steps:
         - name: Download WebGL Build
