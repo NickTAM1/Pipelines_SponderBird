@@ -41,7 +41,7 @@ jobs:
         with:
           projectPath: .
           targetPlatform: WebGL
-          buildpath: builds
+          buildsPath: builds
 
       - name: Debug output structure
         run: find builds/ -type f | sort
@@ -56,6 +56,7 @@ jobs:
           name: ${{ steps.set-artifact-name.outputs.name }}
           path: builds/WebGL/WebGL
           retention-days: 7
+          if-no-files-found: error
     
   deploy:    
       name: Deploy to GitHub Pages
