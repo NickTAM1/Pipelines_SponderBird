@@ -58,13 +58,13 @@ jobs:
           path: builds/WebGL/WebGL
           retention-days: 7
     
-    deploy:
+  deploy:    
       name: Deploy to GitHub Pages
       needs: build
       runs-on: ubuntu-latest
 
       permissions:
-        pergers: write
+        pages: write
         id-token: write
 
       environment:
