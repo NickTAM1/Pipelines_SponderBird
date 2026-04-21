@@ -16,7 +16,7 @@ var FirebaseBridge = {
                 window.__fbAuth.projectId = data.projectId || "";
 
                 var payload = JSON.stringify(window.__fbAuth);
-                SendMessage("FirebaseManager", "OnAuthStateReceived", payload);
+                SendMessage("GameManager", "OnAuthReceived", payload);
 
                 if(window.parent && window.parent !== window) {
                     window.parent.postMessage({type: "firebase-auth-ack"}, "*");
@@ -37,7 +37,7 @@ var FirebaseBridge = {
 
             if(window.__fbAuth && window.__fbAuth.uid && window.__fbAuth.idToken){
                 var payload = JSON.stringify(window.__fbAuth);
-                SendMessage("FirebaseManager", "OnAuthStateReceived", payload);
+                SendMessage("GameManager", "OnAuthReceived", payload);
             }
         },
 
@@ -77,7 +77,7 @@ var FirebaseBridge = {
             .then(function(data) {console.log("Score saved", data.name); })
             .catch(function(err) {console.error("Error saving score", err); });       
 
-            var userDocUrl = baseUrl + "users/" + auth.uid;
+            var userDocUrl = baseUrl + "/users/" + auth.uid;
 
             fetch(userDocUrl, {
                 method: "GET",
@@ -116,5 +116,5 @@ var FirebaseBridge = {
 
 };
 
-mergeInto(LibraryManager.library, FirebaseBridgeLib);
+mergeInto(LibraryManager.library, FirebaseBridge);
 
