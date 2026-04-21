@@ -5,6 +5,8 @@ public class FirebaseManager : MonoBehaviour
 {
     public static FirebaseManager Instance { get; private set; }
 
+    [SerializeField] private string fallbackProjectId = "";
+
     public bool IsAuthenticated { get; private set; } = false;
 
     public string UserId { get; private set; } = "";
@@ -47,11 +49,25 @@ public class FirebaseManager : MonoBehaviour
     {
         Debug.Log($"Auth Received: {json} ");
 
+        if (string.IsNullOrWhiteSpace(json))
+        {
+            Debug.LogWarning("Empty auth payload received.");
+            ResetAuthState();
+            return;
+        }
+
         var data = JsonUtility.FromJson<AuthPayLoad>(json);
-        UserId = data.uid;
-        IdToken = data.idToken;
-        DisplayName = data.displayName;
-        ProjectId = data.projectId;
+        if (data == null)
+        {
+            Debug.LogWarning("Invalid auth payload JSON.");
+            ResetAuthState();
+            return;
+        }
+
+        UserId = data.uid ?? "";
+        IdToken = data.idToken ?? "";
+        DisplayName = string.IsNullOrEmpty(data.displayName) ? "Player" : data.displayName;
+        ProjectId = string.IsNullOrEmpty(data.projectId) ? fallbackProjectId : data.projectId;
         IsAuthenticated = !string.IsNullOrEmpty(UserId) && !string.IsNullOrEmpty(IdToken);
 
         Debug.Log($"User Authenticated as {DisplayName}, UID {UserId}");
@@ -70,11 +86,20 @@ public class FirebaseManager : MonoBehaviour
             score = score,
             pipes = pipes,
             duration = duration,
- 
+            projectId = ProjectId
         };
 
         var jsonBody = JsonUtility.ToJson(payload);
         SubmitScoreToFirestore(jsonBody);
+    }
+
+    private void ResetAuthState()
+    {
+        IsAuthenticated = false;
+        UserId = "";
+        IdToken = "";
+        DisplayName = "Player";
+        ProjectId = fallbackProjectId;
     }
 
     [System.Serializable]
@@ -93,6 +118,7 @@ public class FirebaseManager : MonoBehaviour
         public int score;
         public int pipes;
         public int duration;
+        public string projectId;
 
     }
 }
